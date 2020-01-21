@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func readLine(filename string) ([] string, error) {
+func readLine(filename string) ([]string, error) {
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -32,7 +32,7 @@ func readLine(filename string) ([] string, error) {
 	return lines, nil
 }
 
-func requestToInstagram(hashTagWord string)(string, error){
+func requestToInstagram(hashTagWord string) (string, error) {
 
 	base, _ := url.Parse("https://www.instagram.com/")
 	path := "/explore/tags/" + hashTagWord
@@ -53,7 +53,6 @@ func requestToInstagram(hashTagWord string)(string, error){
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	page := string(body)
@@ -61,12 +60,11 @@ func requestToInstagram(hashTagWord string)(string, error){
 	return page, nil
 }
 
-
 func main() {
 
 	fmt.Println("開始:" + time.Now().Format(time.RFC3339))
 
-	wordListFile := "./word_list.csv"
+	wordListFile := "./input/word_list.csv"
 	lines, err := readLine(wordListFile)
 	if err != nil {
 		fmt.Println(err)
@@ -76,13 +74,14 @@ func main() {
 	// ハッシュタグページから件数を抜き出すための正規表現
 	r := regexp.MustCompile("\"edge_hashtag_to_media\":{\"count\":([0-9]+)")
 
-	outputCsvName := "./output.csv"
+	outputCsvName := "./output/word_count_list.csv"
 	outputCsvFile, err := os.Create(outputCsvName)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	// TODO Sleep入れるが、ファイル開きっぱなし。全件取得後に書き込む使用だと途中でエラーが出た場合に途中経過が保存されない。
 	outputCsvFile, err = os.OpenFile(outputCsvName, os.O_RDWR, 0644)
 	if err != nil {
 		fmt.Println(err)
@@ -100,7 +99,15 @@ func main() {
 			os.Exit(1)
 		}
 		// [0]に'"edge_hashtag_to_media":{"count":13776'　[1]に'13776'のような展開
-		strCount := r.FindStringSubmatch(page)[1]
+		//strCount := r.FindStringSubmatch(page)[1]
+		matchString := r.FindStringSubmatch(page)
+
+		strCount := "0"
+		if len(matchString) == 2 {
+			strCount = matchString[1]
+		} else {
+			fmt.Println(word+": 件数取得エラー:", matchString)
+		}
 
 		row := word + "," + strCount + "\n"
 		// 出力ファイルに1行書き込み
@@ -109,7 +116,11 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+
+		// 1時間に200回までのアクセス制限 (1800*200=360000)
+		time.Sleep(1801 * time.Millisecond)
 	}
+
 	err = w.Flush()
 	if err != nil {
 		fmt.Println(err)
@@ -117,6 +128,4 @@ func main() {
 	}
 
 	fmt.Println("終了:" + time.Now().Format(time.RFC3339))
-
-
 }

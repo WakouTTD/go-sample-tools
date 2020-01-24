@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"go/lockfile/lock"
+	"lockfile/lock"
 )
 
 func main() {

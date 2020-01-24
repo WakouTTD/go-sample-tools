@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
-	"lockfile/lock"
+	"go/lockfile/lock"
 )
 
 func main() {
+
+	p, _ := os.Getwd()
+	fmt.Println(p)
 
 	programName := "samplemedia"
 

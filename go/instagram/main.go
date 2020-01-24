@@ -61,9 +61,12 @@ func requestToInstagram(hashTagWord string) (string, error) {
 }
 
 func main() {
+	p, _ := os.Getwd()
+	fmt.Println(p)
 
 	fmt.Println("開始:" + time.Now().Format(time.RFC3339))
 
+	//	wordListFile := "~/work2020/go-sample-tools/go/input/word_list.csv"
 	wordListFile := "./input/word_list.csv"
 	lines, err := readLine(wordListFile)
 	if err != nil {

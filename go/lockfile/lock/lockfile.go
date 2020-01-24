@@ -22,7 +22,7 @@ func addLockFile(fileName string, beginTime time.Time) error {
 }
 
 func Lock(mediaName string, beginTime time.Time) {
-	lockFileDirectory := "./lockfile/"
+	lockFileDirectory := "~/work2020/go-sample-tools/go/lockfile/"
 	fileName := lockFileDirectory + mediaName
 	if exists(fileName) {
 		fmt.Printf("異常終了: The file \"%s\" already exists . Check the directory \"%s\".\n", fileName, lockFileDirectory)

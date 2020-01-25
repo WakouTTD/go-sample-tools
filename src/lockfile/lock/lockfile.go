@@ -12,6 +12,8 @@ func exists(filename string) bool {
 	return err == nil
 }
 
+var lockFileDirectory = "./"
+
 func addLockFile(fileName string, beginTime time.Time) error {
 	content := []byte(beginTime.Format("2006/01/02 15:04:05") + "\n")
 	err := ioutil.WriteFile(fileName, content, os.ModePerm)
@@ -22,13 +24,16 @@ func addLockFile(fileName string, beginTime time.Time) error {
 }
 
 func Lock(mediaName string, beginTime time.Time) {
-	lockFileDirectory := "~/work2020/go-sample-tools/go/lockfile/"
 	fileName := lockFileDirectory + mediaName
 	if exists(fileName) {
 		fmt.Printf("異常終了: The file \"%s\" already exists . Check the directory \"%s\".\n", fileName, lockFileDirectory)
 		os.Exit(1)
 	} else {
-		addLockFile(fileName, beginTime)
+		err := addLockFile(fileName, beginTime)
+		if err != nil {
+			fmt.Printf("異常終了: The file \"%s\". Check the directory \"%s\". %s\n", fileName, lockFileDirectory, err)
+			os.Exit(1)
+		}
 	}
 }
 
@@ -41,10 +46,13 @@ func removeLockFile(fileName string) error {
 }
 
 func UnLock(mediaName string) {
-	lockFileDirectory := "./lockfile/"
 	fileName := lockFileDirectory + mediaName
 	if exists(fileName) {
-		removeLockFile(fileName)
+		err := removeLockFile(fileName)
+		if err != nil {
+			fmt.Printf("異常終了: The file \"%s\". Check the directory \"%s\". %s\n", fileName, lockFileDirectory, err)
+			os.Exit(1)
+		}
 	} else {
 		fmt.Printf("異常終了: The file \"%s\" already does not exist . Check the directory \"%s\".\n", fileName, lockFileDirectory)
 		os.Exit(2)

@@ -23,7 +23,7 @@ func main() {
 
 	time.Sleep(5 * time.Second)
 
-	lock.UnLock(programName)
+	//	lock.UnLock(programName)
 
 	endTime := time.Now()
 	fmt.Println("終了 日時 : ", endTime.Format("2006/01/02 15:04:05"))
